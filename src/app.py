@@ -165,12 +165,32 @@ class Quest:
         # Display information about the quest, including title, description, and objectives
 
 
+import random
+
+
+import random
+
 
 class DiceEngine:
     @staticmethod
-    def roll(dice_count, sides):
-        rolls = [random.randint(1, sides) for _ in range(dice_count)]
-        return sum(rolls)
+    def roll_test(ability_rank, difficulty, bonus_dice=0, penalty_dice=0, modifiers=0):
+        test_dice_count = ability_rank
+        total_dice_count = test_dice_count + bonus_dice
+
+        rolls = [random.randint(1, 6) for _ in range(total_dice_count)]
+        sorted_rolls = sorted(rolls, reverse=True)
+        sum_dice = sum(sorted_rolls[:test_dice_count])
+
+        if penalty_dice > 0:
+            sum_dice -= sum(sorted_rolls[-penalty_dice:])
+
+        sum_dice += modifiers
+
+        if sum_dice >= difficulty:
+            return True
+        else:
+            return False
+
 
 
 def main():
