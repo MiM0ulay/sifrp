@@ -52,7 +52,7 @@ class GameEngine:
                 print("Exiting the game...")
                 break
             elif command.lower() == "quest":
-                self.player.embark_on_quest()
+                self.player.embark_on_quest(DiceEngine)
             else:
                 print("Invalid command. Please try again.")
         # Handle user input and trigger appropriate actions based on the current game state
@@ -80,14 +80,15 @@ class Character:
         self.intelligence = 0
         # Initialize the character with the given name
 
-    def embark_on_quest(self):
+    def embark_on_quest(self, dice_engine):
         print(f"{self.name} embarks on a quest!")
 
         quest_difficulty = random.randint(1, 10)
         print(f"The quest difficulty is {quest_difficulty}.")
 
         success_threshold = self.strength + self.agility + self.intelligence
-        if success_threshold >= quest_difficulty:
+
+        if dice_engine.roll_test(success_threshold, quest_difficulty):
             print("Quest completed successfully!")
         else:
             print("Quest failed!")
@@ -165,12 +166,6 @@ class Quest:
         # Display information about the quest, including title, description, and objectives
 
 
-import random
-
-
-import random
-
-
 class DiceEngine:
     @staticmethod
     def roll_test(ability_rank, difficulty, bonus_dice=0, penalty_dice=0, modifiers=0):
@@ -186,11 +181,14 @@ class DiceEngine:
 
         sum_dice += modifiers
 
+        print(f"Rolls: {rolls}")
+        print(f"Sorted Rolls: {sorted_rolls}")
+        print(f"Sum of Test Dice: {sum_dice}")
+
         if sum_dice >= difficulty:
             return True
         else:
             return False
-
 
 
 def main():
