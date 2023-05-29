@@ -7,44 +7,56 @@ class GameEngine:
         # Initialize the game engine and its internal state
 
     def start_game(self):
+        """
+        Start the game and handle the main game loop.
+        """
         self.print_header()
 
         self.create_character()
 
         self.handle_input()
-        # Start the game and handle the main game loop
 
     def create_character(self):
+        """
+        Prompt the player for character creation and customization.
+        """
         print("Character Creation:")
         player_name = input("Enter your character name: ")
         self.player = Character(player_name)
         self.player.generate_attributes()
         self.player.display_info()
-        # Prompt the player for character creation and customization
 
     def handle_scheming(self):
+        """
+        Manage the political scheming mechanics and interactions with noble houses.
+        """
         pass
-        # Manage the political scheming mechanics and interactions with noble houses
 
     def undertake_quest(self):
-        # Handle the quests and missions, including espionage, information gathering, and goal achievement
-         # Simulate a dice roll using the DiceEngine
+        """
+        Handle the quests and missions, including espionage, information gathering, and goal achievement.
+        """
         dice_count = 2  # Example: Roll 2 dice
         sides = 6  # Example: 6-sided dice
         roll_result = DiceEngine.roll(dice_count, sides)
         print(f"You rolled: {roll_result}")
 
-        # ...
-
     def interact_with_npcs(self):
+        """
+        Manage interactions with dynamic NPCs, including their personalities and reactions.
+        """
         pass
-        # Manage interactions with dynamic NPCs, including their personalities and reactions
 
     def display_game_state(self):
+        """
+        Display the current game state, including character information, quests, and relationships.
+        """
         pass
-        # Display the current game state, including character information, quests, and relationships
 
     def handle_input(self):
+        """
+        Handle user input and trigger appropriate actions based on the current game state.
+        """
         while True:
             command = input("Enter a command (quit to exit, quest to embark on a quest): ")
 
@@ -55,13 +67,17 @@ class GameEngine:
                 self.player.embark_on_quest(DiceEngine)
             else:
                 print("Invalid command. Please try again.")
-        # Handle user input and trigger appropriate actions based on the current game state
 
     def handle_exit(self):
+        """
+        Clean up resources and gracefully exit the game.
+        """
         pass
-        # Clean up resources and gracefully exit the game
 
     def print_header(self):
+        """
+        Print the game header.
+        """
         header = """
                ####################################################
                #                                                  #
@@ -81,6 +97,9 @@ class Character:
         # Initialize the character with the given name
 
     def embark_on_quest(self, dice_engine):
+        """
+        Embark on a quest and determine if it's completed successfully.
+        """
         print(f"{self.name} embarks on a quest!")
 
         quest_difficulty = random.randint(1, 10)
@@ -96,10 +115,15 @@ class Character:
         print("Quest ends.")
 
     def handle_consequences(self):
+        """
+        Process the consequences of player decisions and update the game state.
+        """
         pass
-        # Process the consequences of player decisions and update the game state
 
     def customize_attributes(self):
+        """
+        Prompt the player to customize the character's attributes.
+        """
         print("Customize your attributes:")
         self.strength = self.roll_attribute()
         self.agility = self.roll_attribute()
@@ -107,68 +131,95 @@ class Character:
 
         print("Attribute customization complete!")
         self.display_info()
-        # Prompt the player to customize the character's attributes
 
     def generate_attributes(self):
+        """
+        Generate random attribute values for the character.
+        """
         self.strength = random.randint(1, 6)
         self.agility = random.randint(1, 6)
         self.intelligence = random.randint(1, 6)
 
-
     def roll_attribute(self):
+        """
+        Roll 3 six-sided dice and return the sum of the highest 2 rolls.
+        """
         rolls = [random.randint(1, 6) for _ in range(3)]
         return sum(sorted(rolls)[1:])
-    
+
     def manage_relationships(self):
+        """
+        Manage the character's relationships with noble houses and other characters.
+        """
         pass
-        # Manage the character's relationships with noble houses and other characters
 
     def receive_quest(self, quest):
+        """
+        Assign a new quest to the character.
+        """
         pass
-        # Assign a new quest to the character
 
     def complete_quest(self, quest):
+        """
+        Handle the completion of a quest and update character progression.
+        """
         pass
-        # Handle the completion of a quest and update character progression
 
     def handle_event(self, event):
+        """
+        Process an event that affects the character's state.
+        """
         pass
-        # Process an event that affects the character's state
 
     def display_info(self):
+        """
+        Display the character's information, including attributes, relationships, and current quest.
+        """
         print("Character Information:")
         print(f"Name: {self.name}")
         print(f"Strength: {self.strength}")
         print(f"Agility: {self.agility}")
         print(f"Intelligence: {self.intelligence}")
-        # Display the character's information, including attributes, relationships, and current quest
 
 
 class Quest:
     def __init__(self, title, description, objectives, rewards):
+        """
+        Initialize the quest with the given details.
+        """
         pass
-        # Initialize the quest with the given details
 
     def update_progress(self):
+        """
+        Update the progress of the quest based on player actions.
+        """
         pass
-        # Update the progress of the quest based on player actions
 
     def check_completion(self):
+        """
+        Check if the quest's objectives have been completed.
+        """
         pass
-        # Check if the quest's objectives have been completed
 
     def give_rewards(self):
+        """
+        Provide rewards to the player upon quest completion.
+        """
         pass
-        # Provide rewards to the player upon quest completion
 
     def display_info(self):
+        """
+        Display information about the quest, including title, description, and objectives.
+        """
         pass
-        # Display information about the quest, including title, description, and objectives
 
 
 class DiceEngine:
     @staticmethod
     def roll_test(ability_rank, difficulty, bonus_dice=0, penalty_dice=0, modifiers=0):
+        """
+        Simulate a dice roll and determine if the test is successful.
+        """
         test_dice_count = ability_rank
         total_dice_count = test_dice_count + bonus_dice
 
