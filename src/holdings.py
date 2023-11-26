@@ -1,5 +1,6 @@
 import random
 from utils import roll_dice
+from utils import happen_with_percentage
 
 defense_info = {
     "Superior Castle": {
@@ -101,36 +102,90 @@ feature_data = {
 
 
 def allocate_defense_holdings(defense_score, defense_info):
+    """
+
+    :param defense_score:
+    :param defense_info:
+    :return:
+    """
     allocated_keys = {}
     for key, value in defense_info.items():
         if value["Investment"] <= defense_score:
             allocated_keys[key] = value["Time"]
-            defense_score -=  value["Investment"]
+            defense_score -= value["Investment"]
     return allocated_keys
 
 
 def choose_random_terrain(location, land_score):
+    """
+
+    :param location:
+    :param land_score:
+    :return:
+    """
     terrains = []
     features = []
     if location in location_data:
         possible_terrain = location_data[location]["Terrain"]
         possible_features = location_data[location]["Features"]
-        while(land_score >= 3):
+        while (land_score >= 3):
             # Randomly select a terrain based on land score
-            terrain_value =  random.choice(possible_terrain)
+            terrain_value = random.choice(possible_terrain)
             if terrain_cost[terrain_value] <= land_score:
                 terrains.append(terrain_value)
                 land_score -= terrain_cost[terrain_value]
-            feature_values =  random.choice(possible_features)
+            feature_values = random.choice(possible_features)
             feature_value = random.choice(list(feature_data[feature_values].keys()))
-            if feature_data[feature_values][feature_value] <= land_score: 
-                 features.append(feature_value)
-                 land_score -=  feature_data[feature_values][feature_value]
+            if feature_data[feature_values][feature_value] <= land_score:
+                features.append(feature_value)
+                land_score -= feature_data[feature_values][feature_value]
 
     return terrains, features
 
 
+def determine_maximum_status(influence):
+    """
+
+    :param influence:
+    :return:
+    """
+    if influence <= 10:
+        return 2
+    elif influence <= 20:
+        return 3
+    elif influence <= 40:
+        return 4
+    elif influence <= 50:
+        return 5
+    elif influence <= 60:
+        return 6
+    elif influence <= 70:
+        return 7
+    else:
+        return 8
+
+
+def get_heirs(influence_score):
+    heirs = []
+    other_heirs = False
+    if influence_score >= 20 and happen_with_percentage(70, 100):
+        heirs.append("First born")
+        influence_score -= 20
+        other_heirs = True
+    if other_heirs and influence_score >= 10 and happen_with_percentage(40, 100):
+        heirs.append("Second born")
+        influence_score -= 10
+        other_heirs = True
+    if other_heirs and influence_score >= 5 and happen_with_percentage(30, 100):
+        heirs.append("Other children")
+        influence_score -= 5
+    return heirs
+
+
 class house_holdings:
+    """
+    House holdings
+    """
     def __init__(self):
         self.defense_holdings = None
         self.heirs = None
@@ -139,13 +194,20 @@ class house_holdings:
 
 defense_score = 22  # Replace with the actual defense score
 land_score = 46
+influence = 35  # Replace with the desired influence value
+
 location = "Mountains of the Moon"
 
 allocated_keys = allocate_defense_holdings(defense_score, defense_info)
 print("Defense Allocated to the House:", allocated_keys)
 
-
 terrains, features = choose_random_terrain(location, land_score)
 print("Terrains Allocated to the House:", terrains)
 print("Features Allocated to the House:", features)
 
+
+maximum_status = determine_maximum_status(influence)
+print(f"Maximum Status for Influence {influence}: {maximum_status}")
+
+heirs = get_heirs(influence)
+print(f"Heirs {influence}: {heirs}")

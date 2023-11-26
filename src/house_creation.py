@@ -1,5 +1,6 @@
 import random
 
+
 class House:
     location_modifiers = [
         {
@@ -113,6 +114,9 @@ class House:
         self.population = roll_dice(7)
         self.power = roll_dice(7)
         self.wealth = roll_dice(7)
+        self.first_founding = determine_first_founding()
+        self.historical_events_int = determine_number_historical_events(self.first_founding)
+        self.historical_events_str = determine_historical_events(self.historical_events_int)
 
         # Apply location modifiers
         for location_mod in House.location_modifiers:
@@ -124,6 +128,10 @@ class House:
                 self.population += location_mod["Population"]
                 self.power += location_mod["Power"]
                 self.wealth += location_mod["Wealth"]
+
+        # Apply historical event modifiers
+        for event in self.historical_events_str:
+            self.apply_event_modifiers(event)
 
     def apply_event_modifiers(self, event):
         if event == "Doom":
@@ -143,52 +151,52 @@ class House:
             self.power -= roll_dice(1)
             self.wealth -= roll_dice(1)
         elif event == "Catastrophe":
-            self.law = max(self.law - roll_dice(1), 0)
+            self.law -= roll_dice(1)
             self.population -= roll_dice(1)
             self.power -= roll_dice(1)
             self.wealth -= roll_dice(1)
         elif event == "Madness":
-            self.defense += 6 - roll_dice(2)
-            self.influence += 6 - roll_dice(2)
-            self.lands += 6 - roll_dice(2)
-            self.law += 6 - roll_dice(2)
-            self.population += 6 - roll_dice(2)
-            self.power += 6 - roll_dice(2)
-            self.wealth += 6 - roll_dice(2)
+            self.defense += (6 - roll_dice(2))
+            self.influence += (6 - roll_dice(2))
+            self.lands += (6 - roll_dice(2))
+            self.law += (6 - roll_dice(2))
+            self.population += (6 - roll_dice(2))
+            self.power += (6 - roll_dice(2))
+            self.wealth += (6 - roll_dice(2))
         elif event == "Invasion/Revolt":
-            self.law = max(self.law - roll_dice(2), 0)
+            self.law -= roll_dice(2)
             self.population -= roll_dice(1)
             self.power -= roll_dice(1)
             self.wealth -= roll_dice(1)
         elif event == "Scandal":
             self.influence -= roll_dice(1)
-            self.law -= roll_dice(1)
+            self.lands -= roll_dice(1)
+            self.power -= roll_dice(1)
         elif event == "Treachery":
             self.influence -= roll_dice(1)
-            self.law = max(self.law - roll_dice(1), 0)
+            self.law -= roll_dice(1)
             self.power += roll_dice(1)
         elif event == "Decline":
             self.influence -= roll_dice(1)
-            self.lands -= roll_dice(1)
-            self.law = max(self.law - roll_dice(1), 0)
             self.lands -= roll_dice(1)
             self.population -= roll_dice(1)
             self.power -= roll_dice(1)
             self.wealth -= roll_dice(1)
         elif event == "Infrastructure":
             # Choose two attributes and increase each by +roll_dice(1)
-            attributes_to_increase = random.sample(["defense", "influence", "lands", "law", "population", "power", "wealth"], 2)
+            attributes_to_increase = random.sample(
+                ["defense", "influence", "lands", "law", "population", "power", "wealth"], 2)
             for attr in attributes_to_increase:
                 setattr(self, attr, getattr(self, attr) + roll_dice(1))
         elif event == "Ascent":
             self.influence += roll_dice(1)
             self.lands += roll_dice(1)
             self.power += roll_dice(1)
+            self.wealth += roll_dice(1)
         elif event == "Favor":
             self.influence += roll_dice(1)
             self.lands += roll_dice(1)
             self.law += roll_dice(1)
-            self.population += roll_dice(1)
             self.power += roll_dice(1)
         elif event == "Victory":
             self.defense += roll_dice(1)
@@ -196,7 +204,7 @@ class House:
             self.power += roll_dice(1)
         elif event == "Villain":
             self.influence += roll_dice(1)
-            self.law = max(self.law - roll_dice(1), 0)
+            self.law -= roll_dice(1)
             self.population -= roll_dice(1)
             self.power += roll_dice(1)
         elif event == "Glory":
@@ -205,23 +213,37 @@ class House:
             self.law += roll_dice(1)
             self.power += roll_dice(1)
         elif event == "Conquest":
-            self.defense = max(self.defense - roll_dice(1), 0)
+            self.defense -= roll_dice(1)
             self.influence += roll_dice(1)
             self.lands += roll_dice(1)
-            self.law = max(self.law - roll_dice(1), 0)
-            self.power += roll_dice(1)
+            self.law -= roll_dice(1)
+            self.population += roll_dice(1)
+            self.wealth += roll_dice(1)
         elif event == "Windfall":
-            self.influence += roll_dice(1)
-            self.lands += roll_dice(2)
+            self.defense += roll_dice(1)
+            self.influence += roll_dice(2)
+            self.lands += roll_dice(1)
             self.law += roll_dice(1)
             self.population += roll_dice(1)
-            self.power += roll_dice(1)
+            self.power += roll_dice(2)
             self.wealth += roll_dice(2)
 
+    def get_house_stats(self):
+        return {
+            "defense": self.defense,
+            "influence": self.influence,
+            "lands": self.lands,
+            "law": self.law,
+            "population": self.population,
+            "power": self.power,
+            "wealth": self.wealth,
+        }
 
     def __str__(self):
         description = [
             f"- Location: {self.location}",
+            f"- First Fouding: {self.first_founding}",
+            f"- Historical events: {self.historical_events_str}",
             f"- Defense: {self.defense} / {describe_defense_score(self.defense)}",
             f"- Influence: {self.influence} / {describe_influence_score(self.influence)}",
             f"- Lands: {self.lands} / {describe_lands_score(self.lands)} ",
@@ -233,9 +255,9 @@ class House:
         return "\n".join(description)
 
 
-
 def roll_dice(num_dice):
     return sum([random.randint(1, 6) for _ in range(num_dice)])  # Roll num_dice 6-sided dice
+
 
 def location_for_dice_roll(result):
     if result == 3:
@@ -261,6 +283,7 @@ def location_for_dice_roll(result):
     else:
         return "Unknown"  # Handle any other result not in the specified range
 
+
 def describe_defense_score(defense):
     if defense == 0:
         return "Desolate, ruined land, ravaged by disaster, war, or simply abandoned. No defensible structures of any kind, and no infrastructure for moving troops. You have no fortifications whatsoever."
@@ -280,6 +303,7 @@ def describe_defense_score(defense):
         return "Among the greatest defenses in the world. A good example would be the Eyrie and the Vale of Arryn."
     else:
         return "Unknown Defense Score"  # Handle any other value not in the specified range
+
 
 def describe_influence_score(influence):
     if influence == 0:
@@ -301,6 +325,7 @@ def describe_influence_score(influence):
     else:
         return "Unknown Influence Score"  # Handle any other value not in the specified range
 
+
 def describe_lands_score(lands):
     if lands == 0:
         return "Landless, the house has been completely stripped of its holdings."
@@ -320,6 +345,7 @@ def describe_lands_score(lands):
         return "Most, if not all, of the Seven Kingdoms, such as the holdings of King Robert and the royal branch of House Baratheon."
     else:
         return "Unknown Lands Score"  # Handle any other value not in the specified range
+
 
 def describe_law_score(law):
     if law == 0:
@@ -341,6 +367,7 @@ def describe_law_score(law):
     else:
         return "Unknown Law Score"  # Handle any other value not in the specified range
 
+
 def describe_power_score(power):
     if power == 0:
         return "Powerless, you have no troops, no soldiers, and none loyal to your family."
@@ -360,6 +387,7 @@ def describe_power_score(power):
         return "You have the strength of most of the Seven Kingdoms behind you."
     else:
         return "Unknown Power Score"  # Handle any other value not in the specified range
+
 
 def describe_population_score(population):
     if population == 0:
@@ -381,6 +409,7 @@ def describe_population_score(population):
     else:
         return "Unknown Population Score"  # Handle any other value not in the specified range
 
+
 def describe_wealth_score(wealth):
     if wealth == 0:
         return "Destitute. Your family is penniless."
@@ -401,15 +430,6 @@ def describe_wealth_score(wealth):
     else:
         return "Unknown Wealth Score"  # Handle any other value not in the specified range
 
-"""
-The next step is to determine your house’s historical events, which is
-done by choosing or rolling for your First Founding as shown on Table
-6–3: First Founding. When your house was founded determines
-the number of historical events that can influence the final shape your
-house takes at the start of the game. Older houses have more historical
-events, while younger houses have fewer.
-"""
-
 
 def determine_number_historical_events(first_founding):
     if first_founding == "Ancient Age of Heroes":
@@ -426,6 +446,7 @@ def determine_number_historical_events(first_founding):
         return max(random.randint(1, 6) - 2, 0)
     else:
         return 0  # Handle any other value not in the specified list
+
 
 # Example usage to determine historical events for a specific First Founding
 
@@ -445,6 +466,7 @@ def determine_first_founding():
         return "New War of the Usurper"
     else:
         return "Unknown First Founding"  # Handle any other roll value not in the specified range
+
 
 def determine_historical_events(number_historical_events):
     event_results = [roll_dice(3) for _ in range(1, number_historical_events)]
@@ -483,32 +505,10 @@ def determine_historical_events(number_historical_events):
             historical_events.append("Conquest")
         elif result == 18:
             historical_events.append("Windfall")
-    
-    return historical_events
 
-"""
-Each house has a history, a chronicle of deeds and crimes that shape
-its identity. Great deeds might elevate a house to greater heights, while
-scandal and tragedy can shatter a house’s foundation, forcing it to fall
-into obscurity. Historical events provide important developments in
-your family’s history, either adding to your fortunes or diminishing
-them. Each event modifies your resources, increasing or decreasing
-them by the indicated value. Roll 3d6 once for each historical event
-and compare the result to Table 6–4: Historical Events. Record
-them in the order that you rolled them. Historical events can reduce a
-resource to 0 but no lower.
-The first historical event rolled describes the circumstances of your
-house’s origins, defining what sort of event elevated your family to nobility.
-"""
+    return historical_events
 
 
 # Example usage for a House
 house = House()
-
 print(str(house))
-
-# Roll for the First Founding
-first_founding = determine_first_founding()
-print(f"First Founding: {first_founding}")
-historical_events = determine_number_historical_events(first_founding)
-print(f"Historical Events: {determine_historical_events(historical_events)}")
